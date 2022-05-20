@@ -1,26 +1,23 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, } = require('mongoose');
+const moment = require('moment');
 
-const userSchema = new Schema({
+const thoughtSchema = new Schema({
+    thoughtText: {
+        type: String,
+        required: true,
+        minlength: 1,
+        maxlength: 280
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        get: createdAtVal => moment(createdAtVal).format('MMM DD, YYYY [at] hh:mm a')
+    },
     username: {
         type: String,
-        unique: true,
-        required: true,
-        trim: true
+        required: true
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        match: [/.+@.+\..+/]
-    },
-    thoughts: {
-        type: Schema.Types.ObjectId,
-        ref: 'Thought'
-    },
-    friends: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }
+    reactions: [reactionSchema],
 },
     {
         toJSON: {
@@ -30,9 +27,9 @@ const userSchema = new Schema({
     }
 );
 
-UserSchema.virtual('friendCount').get(function () {
-    return this.friends.length;
+thoughtSchema.virtual('reactionCount').get(function () {
+    return this.reactions.length;
 });
 
-const User = model('user', userSchema);
-module.exports = User;
+const Thought = model('thought', thoughtSchema);
+module.exports = Thought;
