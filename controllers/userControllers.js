@@ -1,4 +1,4 @@
-const User = require('../models/userModels');
+const { User } = require('../models');
 
 module.exports = {
 
@@ -13,10 +13,13 @@ module.exports = {
             .populate({ path: 'friends', select: '-__v' })
             .select('-__v')
             .then((users) => res.json(users))
-            .catch((err) => res.status(500).json(err));
+            .catch(err => {
+                console.log(err);
+                res.status(500).json(err);
+            });
     },
     getSingleUser(req, res) {
-        User.findOne({ _id: req.params.userId })
+        User.findOne({ _id: req.params.id })
             .populate({ path: 'thoughts', select: '-__v' })
             .select('-__v')
             .then((user) =>
@@ -50,7 +53,7 @@ module.exports = {
     createFriend(req, res) {
         User.findOneAndUpdate(
             { _id: req.params.id },
-            { $push: { reactions: { friends: params.friendId } } },
+            { $push: { reactions: { friends: req.params.friendId } } },
             { runValidators: true, new: true })
             .populate({ path: 'friends', select: '-__v' })
             .select('-__v')

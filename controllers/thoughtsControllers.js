@@ -1,15 +1,14 @@
-const { Thoughts, Users } = require('../models');
+const { Thought, User } = require('../models');
 
 
 module.exports = {
 
-    
     createThoughts(req, res) {
-        Thoughts.create(req.body)
+        Thought.create(req.body)
             .then(({ _id }) => {
-                return Users.findOneAndUpdate(
-                    { _id: req.params.userId }, 
-                    { $push: { thoughts: _id } }, 
+                return User.findOneAndUpdate(
+                    { _id: req.params.userId },
+                    { $push: { thoughts: _id } },
                     { new: true });
             })
             .then(thoughts => {
@@ -22,9 +21,9 @@ module.exports = {
             .catch(err => res.json(err));
     },
 
-    
+
     getThoughts(req, res) {
-        Thoughts.find({})
+        Thought.find({})
             .populate({ path: 'reactions', select: '-__v' })
             .select('-__v')
             .then(thoughts => res.json(thoughts))
@@ -34,9 +33,9 @@ module.exports = {
             });
     },
 
-    
+
     getSingleThoughts(req, res) {
-        Thoughts.findOne({ _id: req.params.id })
+        Thought.findOne({ _id: req.params.id })
             .populate({ path: 'reactions', select: '-__v' })
             .select('-__v')
             .then(thoughts => {
@@ -53,9 +52,9 @@ module.exports = {
     },
 
     updateThoughts(req, res) {
-        Thoughts.findOneAndUpdate(
-            { _id: req.params.id }, 
-            req.body, 
+        Thought.findOneAndUpdate(
+            { _id: req.params.id },
+            req.body,
             { new: true, runValidators: true })
             .populate({ path: 'reactions', select: '-__v' })
             .select('-___v')
@@ -70,7 +69,7 @@ module.exports = {
     },
 
     deleteThoughts(req, res) {
-        Thoughts.findOneAndDelete({ _id: req.params.id })
+        Thought.findOneAndDelete({ _id: req.params.id })
             .then(thoughts => {
                 if (!thoughts) {
                     res.status(404).json({ message: 'No thoughts with this ID' });
@@ -82,9 +81,9 @@ module.exports = {
     },
 
     createReaction(req, res) {
-        Thoughts.findOneAndUpdate(
-            { _id: req.params.thoughtId }, 
-            { $push: { reactions: body } }, 
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $push: { reactions: req.body } },
             { new: true, runValidators: true })
             .populate({ path: 'reactions', select: '-__v' })
             .select('-__v')
@@ -100,9 +99,9 @@ module.exports = {
     },
 
     deleteReaction(req, res) {
-        Thoughts.findOneAndUpdate(
-            { _id: req.params.thoughtId }, 
-            { $pull: { reactions: { reactionId: params.reactionId } } }, 
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $pull: { reactions: { reactionId: req.params.reactionId } } },
             { new: true })
             .then(thoughts => {
                 if (!thoughts) {

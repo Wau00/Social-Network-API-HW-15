@@ -1,23 +1,23 @@
 const express = require('express');
-const db = require('./config/connection');
-const routes = require('./routes');
+const mongoose = require('mongoose');
 
-const cwd = process.cwd();
-
-const PORT = process.env.port || 3001;
 const app = express();
+const PORT = process.env.PORT || 3001;
 
-// Note: not necessary for the Express server to function. This just helps indicate what activity's server is running in the terminal.
-// const activity = cwd.includes('01-Activities')
-//     ? cwd.split('/01-Activities/')[1]
-//     : cwd;
-
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(routes);
+app.use(express.urlencoded({ extended: true }));
 
-db.once('open', () => {
-    app.listen(PORT, () => {
-        console.log(`API server running on port ${PORT}!`);
-    });
+app.use(express.static('public'));
+
+app.use(require('./routes'));
+
+// Connect mongoose
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/socialnetworkDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
+
+// Log mongoose queries
+mongoose.set('debug', true);
+
+app.listen(PORT, () => console.log(` ************** Connected on localhost:${PORT} ************* `));
