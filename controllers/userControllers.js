@@ -29,7 +29,7 @@ module.exports = {
     updateUser(req, res) {
         User.findOneAndUpdate(
             { _id: req.params.id },
-            body,
+            req.body,
             { runValidators: true, new: true })
             .then((user) =>
                 !user
