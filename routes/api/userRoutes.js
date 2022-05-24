@@ -1,6 +1,5 @@
 const router = require('express').Router();
 
-const { get } = require('express/lib/response');
 const {
     createUser,
     getUsers,
