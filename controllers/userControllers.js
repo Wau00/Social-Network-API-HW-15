@@ -77,5 +77,3 @@ module.exports = {
     }
 
 };
-
-module.exports = userControllers;
